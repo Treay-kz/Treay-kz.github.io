@@ -1,0 +1,321 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>CompletableFuture | Nest of Wind</title><meta name="author" content="Treay-kz"><meta name="copyright" content="Treay-kz"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="CompletableFuture定义  CompletableFuture实现了两个接口（如上图所示）：Future、CompletionStage。Future表示异步计算的结果，CompletionStage用于表示异步执行过程中的一个步骤（Stage），这个步骤可能是由另外一个CompletionStage触发的，随着当前步骤的完成，也可能会触发其他一系列CompletionStage的执">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CompletableFuture">
+<meta property="og:url" content="https://treay-kz.github.io/Treay-kz.github.io/2024/09/05/completable-future/index.html">
+<meta property="og:site_name" content="Nest of Wind">
+<meta property="og:description" content="CompletableFuture定义  CompletableFuture实现了两个接口（如上图所示）：Future、CompletionStage。Future表示异步计算的结果，CompletionStage用于表示异步执行过程中的一个步骤（Stage），这个步骤可能是由另外一个CompletionStage触发的，随着当前步骤的完成，也可能会触发其他一系列CompletionStage的执">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://f5c98967.cloudflare-imgbed-5yc.pages.dev/file/a7fbdf5384375904bb5f9.jpg">
+<meta property="article:published_time" content="2024-09-05T09:26:09.922Z">
+<meta property="article:modified_time" content="2024-09-06T12:14:32.850Z">
+<meta property="article:author" content="Treay-kz">
+<meta property="article:tag" content="Treay-kz">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://f5c98967.cloudflare-imgbed-5yc.pages.dev/file/a7fbdf5384375904bb5f9.jpg"><link rel="shortcut icon" href="https://f5c98967.cloudflare-imgbed-5yc.pages.dev/file/bf24d0dffe8ae4db9cb7d.png"><link rel="canonical" href="https://treay-kz.github.io/Treay-kz.github.io/2024/09/05/completable-future/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/Treay-kz.github.io/css/index.css?v=4.13.0"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/Treay-kz.github.io/',
+  algolia: undefined,
+  localSearch: {"path":"/Treay-kz.github.io/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"你已切换为繁体中文","cht_to_chs":"你已切换为简体中文","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.11.1/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: true,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'CompletableFuture',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-09-06 20:14:32'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://f5c98967.cloudflare-imgbed-5yc.pages.dev/file/ca61d0954aee5fdded42a.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/Treay-kz.github.io/archives/"><div class="headline">文章</div><div class="length-num">2</div></a><a href="/Treay-kz.github.io/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/Treay-kz.github.io/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/Treay-kz.github.io/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/Treay-kz.github.io/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/Treay-kz.github.io/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/Treay-kz.github.io/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> List</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/Treay-kz.github.io/music/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/Treay-kz.github.io/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/Treay-kz.github.io/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url('https://f5c98967.cloudflare-imgbed-5yc.pages.dev/file/a7fbdf5384375904bb5f9.jpg')"><nav id="nav"><span id="blog-info"><a href="/Treay-kz.github.io/" title="Nest of Wind"><img class="site-icon" src="https://f5c98967.cloudflare-imgbed-5yc.pages.dev/file/bf24d0dffe8ae4db9cb7d.png"/><span class="site-name">Nest of Wind</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/Treay-kz.github.io/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/Treay-kz.github.io/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/Treay-kz.github.io/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/Treay-kz.github.io/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> List</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/Treay-kz.github.io/music/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/Treay-kz.github.io/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/Treay-kz.github.io/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">CompletableFuture</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-09-05T09:26:09.922Z" title="发表于 2024-09-05 17:26:09">2024-09-05</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-09-06T12:14:32.850Z" title="更新于 2024-09-06 20:14:32">2024-09-06</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">2.3k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>7分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="CompletableFuture"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="CompletableFuture"><a href="#CompletableFuture" class="headerlink" title="CompletableFuture"></a>CompletableFuture</h1><h2 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h2><img src="/Treay-kz.github.io/2024/09/05/completable-future/img.png" class="" title="img.png">
+
+<p>CompletableFuture实现了两个接口（如上图所示）：Future、CompletionStage。Future表示异步计算的结果，CompletionStage用于表示异步执行过程中的一个步骤（Stage），这个步骤可能是由另外一个CompletionStage触发的，随着当前步骤的完成，也可能会触发其他一系列CompletionStage的执行。从而可以根据实际业务对这些步骤进行多样化的编排组合。</p>
+<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><p>使用CompletableFuture也是构建依赖树的过程。一个CompletableFuture的完成会触发另外一系列依赖它的CompletableFuture的执行：</p>
+<img src="/Treay-kz.github.io/2024/09/05/completable-future/img_1.png" class="" title="img_1.png">
+
+<p>这里描绘的是一个业务接口的流程，其中包括CF1\CF2\CF3\CF4\CF5共5个步骤，并描绘了这些步骤之间的依赖关系，每个步骤可以是一次RPC调用、一次数据库操作或者是一次本地方法调用等，在使用CompletableFuture进行异步化编程时，图中的每个步骤都会产生一个CompletableFuture对象，最终结果也会用一个CompletableFuture来进行表示。<br>根据CompletableFuture依赖数量，可以分为以下几类：零依赖、一元依赖、二元依赖和多元依赖。</p>
+<h3 id="零依赖"><a href="#零依赖" class="headerlink" title="零依赖"></a>零依赖</h3><p>接口接收到请求后，首先发起两个异步调用CF1、CF2，主要有三种方式：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="type">ExecutorService</span> <span class="variable">executor</span> <span class="operator">=</span> Executors.newFixedThreadPool(<span class="number">5</span>);</span><br><span class="line"><span class="comment">//1、使用runAsync或supplyAsync发起异步调用</span></span><br><span class="line">CompletableFuture&lt;String&gt; cf1 = CompletableFuture.supplyAsync(() -&gt; &#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="string">&quot;result1&quot;</span>;</span><br><span class="line">&#125;, executor);</span><br><span class="line"><span class="comment">//2、CompletableFuture.completedFuture()直接创建一个已完成状态的CompletableFuture</span></span><br><span class="line">CompletableFuture&lt;String&gt; cf2 = CompletableFuture.completedFuture(<span class="string">&quot;result2&quot;</span>);</span><br><span class="line"><span class="comment">//3、先初始化一个未完成的CompletableFuture，然后通过complete()、completeExceptionally()，完成该CompletableFuture</span></span><br><span class="line">CompletableFuture&lt;String&gt; cf = <span class="keyword">new</span> <span class="title class_">CompletableFuture</span>&lt;&gt;();</span><br><span class="line">cf.complete(<span class="string">&quot;success&quot;</span>);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>runAsync 没有返回值，supplyAsync 有返回值</p>
+</blockquote>
+<p>第三种方式的一个典型使用场景，就是将回调方法转为CompletableFuture，然后再依赖CompletableFure的能力进行调用编排，示例如下：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@FunctionalInterface</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">ThriftAsyncCall</span> &#123;</span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">invoke</span><span class="params">()</span> <span class="keyword">throws</span> TException;</span><br><span class="line">&#125;</span><br><span class="line"> <span class="comment">/**</span></span><br><span class="line"><span class="comment">  * 该方法为美团内部rpc注册监听的封装，可以作为其他实现的参照</span></span><br><span class="line"><span class="comment">  * OctoThriftCallback 为thrift回调方法</span></span><br><span class="line"><span class="comment">  * ThriftAsyncCall 为自定义函数，用来表示一次thrift调用（定义如上）</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; CompletableFuture&lt;T&gt; <span class="title function_">toCompletableFuture</span><span class="params">(<span class="keyword">final</span> OctoThriftCallback&lt;?,T&gt; callback , ThriftAsyncCall thriftCall)</span> &#123;</span><br><span class="line">   <span class="comment">//新建一个未完成的CompletableFuture</span></span><br><span class="line">   CompletableFuture&lt;T&gt; resultFuture = <span class="keyword">new</span> <span class="title class_">CompletableFuture</span>&lt;&gt;();</span><br><span class="line">   <span class="comment">//监听回调的完成，并且与CompletableFuture同步状态</span></span><br><span class="line">   callback.addObserver(<span class="keyword">new</span> <span class="title class_">OctoObserver</span>&lt;T&gt;() &#123;</span><br><span class="line">       <span class="meta">@Override</span></span><br><span class="line">       <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">onSuccess</span><span class="params">(T t)</span> &#123;</span><br><span class="line">           resultFuture.complete(t);</span><br><span class="line">       &#125;</span><br><span class="line">       <span class="meta">@Override</span></span><br><span class="line">       <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">onFailure</span><span class="params">(Throwable throwable)</span> &#123;</span><br><span class="line">           resultFuture.completeExceptionally(throwable);</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;);</span><br><span class="line">   <span class="keyword">if</span> (thriftCall != <span class="literal">null</span>) &#123;</span><br><span class="line">       <span class="keyword">try</span> &#123;</span><br><span class="line">           thriftCall.invoke();</span><br><span class="line">       &#125; <span class="keyword">catch</span> (TException e) &#123;</span><br><span class="line">           resultFuture.completeExceptionally(e);</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">return</span> resultFuture;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="一元依赖"><a href="#一元依赖" class="headerlink" title="一元依赖"></a>一元依赖</h3><img src="/Treay-kz.github.io/2024/09/05/completable-future/img_3.png" class="" title="img_3.png">
+
+<p>CF3，CF5分别依赖于CF1和CF2，这种对于单个CompletableFuture的依赖可以通过thenApply、thenAccept、thenCompose等方法来实现，代码如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">CompletableFuture&lt;String&gt; cf3 = cf1.thenApply(result1 -&gt; &#123;</span><br><span class="line">//result1为CF1的结果</span><br><span class="line">//......</span><br><span class="line">return &quot;result3&quot;;</span><br><span class="line">&#125;);</span><br><span class="line">CompletableFuture&lt;String&gt; cf5 = cf2.thenApply(result2 -&gt; &#123;</span><br><span class="line">//result2为CF2的结果</span><br><span class="line">//......</span><br><span class="line">return &quot;result5&quot;;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>thenApply 用来处理异步返回的结果，返回值为一个新的 CompletableFuture，其泛型类型为转换后的结果类型</p>
+</blockquote>
+<blockquote>
+<p>thenRun  不能访问异步计算的结果，且没有返回值，</p>
+</blockquote>
+<blockquote>
+<p>thenAccept  可以访问异步计算的结果，没有返回值</p>
+</blockquote>
+<blockquote>
+<p>thenCompose 用来将多个异步操作串联起来，返回一个新的CompletableFuture，其泛型类型与传递给它的函数所返回CompletableFuture 的类型相同</p>
+</blockquote>
+<h3 id="二元依赖"><a href="#二元依赖" class="headerlink" title="二元依赖"></a>二元依赖</h3><img src="/Treay-kz.github.io/2024/09/05/completable-future/img_2.png" class="" title="img_2.png">
+
+<p>CF4同时依赖于两个CF1和CF2，这种二元依赖可以通过thenCombine等回调来实现，如下代码所示：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">CompletableFuture&lt;String&gt; cf4 = cf1.thenCombine(cf2, (result1, result2) -&gt; &#123;</span><br><span class="line"><span class="comment">//result1和result2分别为cf1和cf2的结果</span></span><br><span class="line"><span class="keyword">return</span> <span class="string">&quot;result4&quot;</span>;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>thenCombine 可以组合两个 CompletableFuture 对象。在两个任务都执行完成后，把两个任务的结果合并。两个任务是并行执行的，它们之间并没有先后依赖顺序。</p>
+</blockquote>
+<h3 id="多元依赖"><a href="#多元依赖" class="headerlink" title="多元依赖"></a>多元依赖</h3><img src="/Treay-kz.github.io/2024/09/05/completable-future/img_4.png" class="" title="img_4.png">
+
+<p>整个流程的结束依赖于三个步骤CF3、CF4、CF5，这种多元依赖可以通过allOf或anyOf方法来实现，区别是当需要多个依赖全部完成时使用allOf，当多个依赖中的任意一个完成即可时使用anyOf，如下代码所示：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">CompletableFuture&lt;Void&gt; cf6 = CompletableFuture.allOf(cf3, cf4, cf5);</span><br><span class="line">CompletableFuture&lt;String&gt; result = cf6.thenApply(v -&gt; &#123;</span><br><span class="line"><span class="comment">//这里的join并不会阻塞，因为传给thenApply的函数是在CF3、CF4、CF5全部完成时，才会执行 。</span></span><br><span class="line">result3 = cf3.join();</span><br><span class="line">result4 = cf4.join();</span><br><span class="line">result5 = cf5.join();</span><br><span class="line"><span class="comment">//根据result3、result4、result5组装最终result;</span></span><br><span class="line"><span class="keyword">return</span> <span class="string">&quot;result&quot;</span>;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>CompletableFuture 中有两个关键字段 result 和 stack，result用于存储当前CF的结果，stack（Completion）表示当前CF完成后需要触发的依赖动作（Dependency Actions），去触发依赖它的CF的计算，依赖动作可以有多个（表示有多个依赖它的CF），以栈（Treiber stack）的形式存储，stack表示栈顶元素。</p>
+<img src="/Treay-kz.github.io/2024/09/05/completable-future/img_5.png" class="" title="img_5.png">
+
+<p>类似观察者模式<br>被观察者：</p>
+<ol>
+<li>每个CompletableFuture都可以被看作一个被观察者，其内部有一个Completion类型的链表成员变量stack，用来存储注册到其中的所有观察者。当被观察者执行完成后会弹栈stack属性，依次通知注册到其中的观察者。</li>
+<li>被观察者CF中的result属性，用来存储返回结果数据。这里可能是一次RPC调用的返回值，也可能是任意对象。</li>
+</ol>
+<p>观察者：</p>
+<p>CompletableFuture支持很多回调方法，例如thenAccept、thenApply、exceptionally等，这些方法接收一个函数类型的参数f，生成一个Completion类型的对象（即观察者），并将入参函数f赋值给Completion的成员变量fn，然后检查当前CF是否已处于完成状态（即result !&#x3D; null），如果已完成直接触发fn，否则将观察者Completion加入到CF的观察者链stack中，再次尝试触发，如果被观察者未执行完则其执行完毕之后通知触发。</p>
+<img src="/Treay-kz.github.io/2024/09/05/completable-future/img_6.png" class="" title="img_6.png">
+
+
+<ol>
+<li>观察者中的dep属性：指向其对应的CompletableFuture，在上面的例子中dep指向CF2。</li>
+<li>观察者中的src属性：指向其依赖的CompletableFuture，在上面的例子中src指向CF1。</li>
+<li>观察者Completion中的fn属性：用来存储具体的等待被回调的函数。这里需要注意的是不同的回调方法（thenAccept、thenApply、exceptionally等）接收的函数类型也不同，即fn的类型有很多种，</li>
+</ol>
+<h3 id="一元依赖-1"><a href="#一元依赖-1" class="headerlink" title="一元依赖"></a>一元依赖</h3><ol>
+<li>将观察者Completion注册到CF1，此时CF1将Completion压栈。</li>
+<li>当CF1的操作运行完成时，会将结果赋值给CF1中的result属性。</li>
+<li>依次弹栈，通知观察者尝试运行。<img src="/Treay-kz.github.io/2024/09/05/completable-future/img_7.png" class="" title="img_7.png"></li>
+</ol>
+<p>Q1：在观察者注册之前，如果CF已经执行完成，并且已经发出通知，那么这时观察者由于错过了通知是不是将永远不会被触发呢 ？</p>
+<p>A1：不会。在注册时检查依赖的CF是否已经完成。如果未完成（即result &#x3D;&#x3D; null）则将观察者入栈，如果已完成（result !&#x3D; null）则直接触发观察者操作。</p>
+<p>Q2：在”入栈“前会有”result &#x3D;&#x3D; null“的判断，这两个操作为非原子操作，CompletableFufure的实现也没有对两个操作进行加锁，完成时间在这两个操作之间，观察者仍然得不到通知，是不是仍然无法触发？</p>
+<p>A2：不会。入栈之后再次检查CF是否完成，如果完成则触发。</p>
+<p>Q3：当依赖多个CF时，观察者会被压入所有依赖的CF的栈中，每个CF完成的时候都会进行，那么会不会导致一个操作被多次执行呢 ？如下图所示，即当CF1、CF2同时完成时，如何避免CF3被多次触发。</p>
+<p>A3：CompletableFuture的实现是这样解决该问题的：观察者在执行之前会先通过CAS操作设置一个状态位，将status由0改为1。如果观察者已经执行过了，那么CAS操作将会失败，取消执行。</p>
+<img src="/Treay-kz.github.io/2024/09/05/completable-future/img_8.png" class="" title="img_8.png">
+
+<p>CompletableFuture在处理并行问题时，全程无加锁操作，极大地提高了程序的执行效率。</p>
+<p>CompletableFuture支持的回调方法十分丰富，但他们的整体流程是一致的。所有回调复用同一套流程架构，不同的回调监听通过策略模式实现差异化。</p>
+<h3 id="二元依赖-1"><a href="#二元依赖-1" class="headerlink" title="二元依赖"></a>二元依赖</h3><img src="/Treay-kz.github.io/2024/09/05/completable-future/img_10.png" class="" title="img_10.png">
+
+<p>thenCombine操作表示依赖两个CompletableFuture。其观察者实现类为BiApply，如上图所示，BiApply通过src和snd两个属性关联被依赖的两个CF，fn属性的类型为BiFunction。与单个依赖不同的是，在依赖的CF未完成的情况下，thenCombine会尝试将BiApply压入这两个被依赖的CF的栈中，每个被依赖的CF完成时都会尝试触发观察者BiApply，BiApply会检查两个依赖是否都完成，如果完成则开始执行。这里为了解决重复触发的问题，同样用的是CAS操作，执行时会先通过CAS设置状态位，避免重复触发。</p>
+<h3 id="多元依赖-1"><a href="#多元依赖-1" class="headerlink" title="多元依赖"></a>多元依赖</h3><p>依赖多个CompletableFuture的回调方法包括allOf、anyOf，区别在于allOf观察者实现类为BiRelay，需要所有被依赖的CF完成后才会执行回调；而anyOf观察者实现类为OrRelay，任意一个被依赖的CF完成后就会触发。二者的实现方式都是将多个被依赖的CF构建成一棵平衡二叉树，执行结果层层通知，直到根节点，触发回调监听。</p>
+<img src="/Treay-kz.github.io/2024/09/05/completable-future/img_9.png" class="" title="img_9.png"></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://Treay-kz.github.io/Treay-kz.github.io">Treay-kz</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://treay-kz.github.io/Treay-kz.github.io/2024/09/05/completable-future/">https://treay-kz.github.io/Treay-kz.github.io/2024/09/05/completable-future/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://Treay-kz.github.io/Treay-kz.github.io" target="_blank">Nest of Wind</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"><div class="social-share" data-image="https://f5c98967.cloudflare-imgbed-5yc.pages.dev/file/a7fbdf5384375904bb5f9.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-full"><a href="/Treay-kz.github.io/2024/09/06/article-title/" title="article title"><img class="cover" src="https://f5c98967.cloudflare-imgbed-5yc.pages.dev/file/d6818f3ad81c02cebc1e1.jpg" onerror="onerror=null;src='/Treay-kz.github.io/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">article title</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://f5c98967.cloudflare-imgbed-5yc.pages.dev/file/ca61d0954aee5fdded42a.jpg" onerror="this.onerror=null;this.src='/Treay-kz.github.io/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Treay-kz</div><div class="author-info__description">coding!!</div></div><div class="card-info-data site-data is-center"><a href="/Treay-kz.github.io/archives/"><div class="headline">文章</div><div class="length-num">2</div></a><a href="/Treay-kz.github.io/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/Treay-kz.github.io/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/Treay-kz"><i class="fab fa-github"></i><span>Follow me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/Treay-kz" target="_blank" title="Github"><i class="fab fa-github" style="color: fa-brands fa-github;"></i></a><a class="social-icon" href="mailto:xxxxxx@gmail.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: fa-solid fa-envelope;"></i></a></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#CompletableFuture"><span class="toc-number">1.</span> <span class="toc-text">CompletableFuture</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89"><span class="toc-number">1.1.</span> <span class="toc-text">定义</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8"><span class="toc-number">1.2.</span> <span class="toc-text">使用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9B%B6%E4%BE%9D%E8%B5%96"><span class="toc-number">1.2.1.</span> <span class="toc-text">零依赖</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E5%85%83%E4%BE%9D%E8%B5%96"><span class="toc-number">1.2.2.</span> <span class="toc-text">一元依赖</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8C%E5%85%83%E4%BE%9D%E8%B5%96"><span class="toc-number">1.2.3.</span> <span class="toc-text">二元依赖</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%9A%E5%85%83%E4%BE%9D%E8%B5%96"><span class="toc-number">1.2.4.</span> <span class="toc-text">多元依赖</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8E%9F%E7%90%86"><span class="toc-number">1.3.</span> <span class="toc-text">原理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E5%85%83%E4%BE%9D%E8%B5%96-1"><span class="toc-number">1.3.1.</span> <span class="toc-text">一元依赖</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8C%E5%85%83%E4%BE%9D%E8%B5%96-1"><span class="toc-number">1.3.2.</span> <span class="toc-text">二元依赖</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%9A%E5%85%83%E4%BE%9D%E8%B5%96-1"><span class="toc-number">1.3.3.</span> <span class="toc-text">多元依赖</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/Treay-kz.github.io/2024/09/06/article-title/" title="article title"><img src="https://f5c98967.cloudflare-imgbed-5yc.pages.dev/file/d6818f3ad81c02cebc1e1.jpg" onerror="this.onerror=null;this.src='/Treay-kz.github.io/img/404.jpg'" alt="article title"/></a><div class="content"><a class="title" href="/Treay-kz.github.io/2024/09/06/article-title/" title="article title">article title</a><time datetime="2024-09-06T11:12:15.000Z" title="发表于 2024-09-06 19:12:15">2024-09-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/Treay-kz.github.io/2024/09/05/completable-future/" title="CompletableFuture"><img src="https://f5c98967.cloudflare-imgbed-5yc.pages.dev/file/a7fbdf5384375904bb5f9.jpg" onerror="this.onerror=null;this.src='/Treay-kz.github.io/img/404.jpg'" alt="CompletableFuture"/></a><div class="content"><a class="title" href="/Treay-kz.github.io/2024/09/05/completable-future/" title="CompletableFuture">CompletableFuture</a><time datetime="2024-09-05T09:26:09.922Z" title="发表于 2024-09-05 17:26:09">2024-09-05</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2023 - 2024 By Treay-kz</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">Hi, welcome to my <a target="_blank" rel="noopener" href="https://butterfly.js.org/">blog</a>!</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/Treay-kz.github.io/js/utils.js?v=4.13.0"></script><script src="/Treay-kz.github.io/js/main.js?v=4.13.0"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><script>function panguFn () {
+  if (typeof pangu === 'object') pangu.autoSpacingPage()
+  else {
+    getScript('https://cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js')
+      .then(() => {
+        pangu.autoSpacingPage()
+      })
+  }
+}
+
+function panguInit () {
+  if (false){
+    GLOBAL_CONFIG_SITE.isPost && panguFn()
+  } else {
+    panguFn()
+  }
+}
+
+document.addEventListener('DOMContentLoaded', panguInit)</script><div class="js-pjax"></div><script async src="https://npm.elemecdn.com/tzy-blog/lib/js/other/sakura.js"></script><script id="canvas_nest" defer="defer" color="0,0,255" opacity="0.7" zIndex="-1" count="99" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/canvas-nest.min.js"></script><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js"></script><script>let pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+var pjax = new Pjax({
+  elements: 'a:not([target="_blank"])',
+  selectors: pjaxSelectors,
+  cacheBust: false,
+  analytics: false,
+  scrollRestoration: false
+})
+
+document.addEventListener('pjax:send', function () {
+
+  // removeEventListener
+  btf.removeGlobalFnEvent('pjax')
+  btf.removeGlobalFnEvent('themeChange')
+
+  document.getElementById('rightside').classList.remove('rightside-show')
+  
+  if (window.aplayers) {
+    for (let i = 0; i < window.aplayers.length; i++) {
+      if (!window.aplayers[i].options.fixed) {
+        window.aplayers[i].destroy()
+      }
+    }
+  }
+
+  typeof typed === 'object' && typed.destroy()
+
+  //reset readmode
+  const $bodyClassList = document.body.classList
+  $bodyClassList.contains('read-mode') && $bodyClassList.remove('read-mode')
+
+  typeof disqusjs === 'object' && disqusjs.destroy()
+})
+
+document.addEventListener('pjax:complete', function () {
+  window.refreshFn()
+
+  document.querySelectorAll('script[data-pjax]').forEach(item => {
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+  })
+
+  GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+  typeof panguInit === 'function' && panguInit()
+
+  // google analytics
+  typeof gtag === 'function' && gtag('config', '', {'page_path': window.location.pathname});
+
+  // baidu analytics
+  typeof _hmt === 'object' && _hmt.push(['_trackPageview',window.location.pathname]);
+
+  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+
+  // prismjs
+  typeof Prism === 'object' && Prism.highlightAll()
+})
+
+document.addEventListener('pjax:error', e => {
+  if (e.request.status === 404) {
+    pjax.loadUrl('/Treay-kz.github.io/404.html')
+  }
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/Treay-kz.github.io/js/search/local-search.js?v=4.13.0"></script></div></div></body></html>
